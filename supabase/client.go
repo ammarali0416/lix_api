@@ -7,6 +7,8 @@ import (
 
 	"database/sql"
 
+	_ "github.com/lib/pq"
+
 	"github.com/supabase-community/supabase-go"
 )
 

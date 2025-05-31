@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -113,11 +114,41 @@ func main() {
 
 		// Test Supabase
 		sb := supabase.GetSupabaseClient()
-		// Supabase client does not expose direct SQL, so just check client is not nil
 		if sb == nil {
 			fmt.Println("Supabase client creation failed")
+			return
 		} else {
 			fmt.Println("Supabase client creation successful")
+		}
+
+		// Load posts_search_test_2.json and insert posts
+		fileData, err := os.ReadFile("posts_search_test_2.json")
+		if err != nil {
+			fmt.Printf("Failed to read posts_search_test_2.json: %v\n", err)
+			return
+		}
+		var parsed struct {
+			Posts []map[string]interface{} `json:"posts"`
+		}
+		err = json.Unmarshal(fileData, &parsed)
+		if err != nil {
+			fmt.Printf("Failed to parse posts_search_test_2.json: %v\n", err)
+			return
+		}
+		endpoint := "https://api.lix-it.com/v1/li/linkedin/search/posts"
+		url := "https://www.linkedin.com/search/results/content/?keywords=composites%20and%20sizing%20agents&origin=SWITCH_SEARCH_VERTICAL&sid=rHJ"
+		for i, post := range parsed.Posts {
+			metadata := map[string]interface{}{
+				"endpoint": endpoint,
+				"url":      url,
+				"client":   "soarce",
+			}
+			err := supabase.LoadStagingDataSupabase(sb, post, metadata)
+			if err != nil {
+				fmt.Printf("Failed to insert post %d: %v\n", i, err)
+			} else {
+				fmt.Printf("Inserted post %d\n", i)
+			}
 		}
 		return
 	default:
