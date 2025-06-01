@@ -122,9 +122,9 @@ func main() {
 		}
 
 		// Load posts_search_test_2.json and insert posts
-		fileData, err := os.ReadFile("posts_search_test_2.json")
+		fileData, err := os.ReadFile("posts_search_test.json")
 		if err != nil {
-			fmt.Printf("Failed to read posts_search_test_2.json: %v\n", err)
+			fmt.Printf("Failed to read posts_search_test.json: %v\n", err)
 			return
 		}
 		var parsed struct {
@@ -132,7 +132,7 @@ func main() {
 		}
 		err = json.Unmarshal(fileData, &parsed)
 		if err != nil {
-			fmt.Printf("Failed to parse posts_search_test_2.json: %v\n", err)
+			fmt.Printf("Failed to parse posts_search_test.json: %v\n", err)
 			return
 		}
 		endpoint := "https://api.lix-it.com/v1/li/linkedin/search/posts"
@@ -141,7 +141,7 @@ func main() {
 			metadata := map[string]interface{}{
 				"endpoint": endpoint,
 				"url":      url,
-				"client":   "soarce",
+				"client":   "test",
 			}
 			err := supabase.LoadStagingDataSupabase(sb, post, metadata)
 			if err != nil {
